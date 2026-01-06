@@ -25,10 +25,10 @@ use App\Http\Controllers\API\V1\Catalog\BrandController;
     // Route::get('/products/new', [ProductController::class, 'newArrivals']);
 
     // use App\Http\Controllers\API\V1\Catalog\ProductController;
-    Route::get('/products/{slug}', [ProductController::class, 'show']);
     Route::get('/products', [ProductController::class, 'index']); // category filter here
     Route::get('/products/featured', [ProductController::class, 'featured']);
     Route::get('/products/top-selling', [ProductController::class, 'topSelling']);
+    Route::get('/products/{slug}', [ProductController::class, 'show']);
 
 
     // Cart
