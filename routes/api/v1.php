@@ -18,11 +18,18 @@ use App\Http\Controllers\Api\V1\Catalog\BrandController;
     Route::get('/brands', [BrandController::class, 'index']);
 
     // Products
-    Route::get('/products', [ProductController::class, 'index']);
+    // Route::get('/products', [ProductController::class, 'index']);
+    // Route::get('/products/{slug}', [ProductController::class, 'show']);
+    // Route::get('/products/featured', [ProductController::class, 'featured']);
+    // Route::get('/products/best-selling', [ProductController::class, 'bestSelling']);
+    // Route::get('/products/new', [ProductController::class, 'newArrivals']);
+
+    // use App\Http\Controllers\API\V1\Catalog\ProductController;
     Route::get('/products/{slug}', [ProductController::class, 'show']);
+    Route::get('/products', [ProductController::class, 'index']); // category filter here
     Route::get('/products/featured', [ProductController::class, 'featured']);
-    Route::get('/products/best-selling', [ProductController::class, 'bestSelling']);
-    Route::get('/products/new', [ProductController::class, 'newArrivals']);
+    Route::get('/products/top-selling', [ProductController::class, 'topSelling']);
+
 
     // Cart
     Route::get('/cart', [CartController::class, 'show']);
