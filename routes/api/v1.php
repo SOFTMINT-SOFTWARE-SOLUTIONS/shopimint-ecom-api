@@ -1,11 +1,11 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\V1\AuthController;
-use App\Http\Controllers\Api\V1\Catalog\CategoryController;
-use App\Http\Controllers\Api\V1\Catalog\CategoryProductController;
-use App\Http\Controllers\Api\V1\Catalog\ProductController;
-use App\Http\Controllers\Api\V1\Catalog\BrandController;       
+use App\Http\Controllers\API\V1\AuthController;
+use App\Http\Controllers\API\V1\Catalog\CategoryController;
+use App\Http\Controllers\API\V1\Catalog\CategoryProductController;
+use App\Http\Controllers\API\V1\Catalog\ProductController;
+use App\Http\Controllers\API\V1\Catalog\BrandController;       
 
     // Auth
     Route::post('/auth/register', [AuthController::class, 'register']);
