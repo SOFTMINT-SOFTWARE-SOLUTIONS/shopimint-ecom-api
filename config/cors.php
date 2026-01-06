@@ -9,6 +9,8 @@ return [
     'allowed_origins' => [
         env('FRONTEND_URL', 'http://localhost:3000'),
         'http://localhost:3000',
+        'https://www.siriwardanamobile.lk',
+        'https://siriwardanamobile.lk',
     ],
 
     'allowed_origins_patterns' => [],
