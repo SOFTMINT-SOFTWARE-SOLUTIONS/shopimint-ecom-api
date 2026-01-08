@@ -13,7 +13,6 @@ class Dashboard extends BaseDashboard
             \App\Filament\Widgets\OrderStats::class,
             \App\Filament\Widgets\OrdersByStatusChart::class,
             \App\Filament\Widgets\RecentOrders::class,
-            \App\Filament\Widgets\InventoryAlerts::class,
         ];
     }
 }
