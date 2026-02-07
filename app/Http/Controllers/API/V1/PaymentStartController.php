@@ -17,7 +17,8 @@ class PaymentStartController extends Controller
     public function start(
         Request $request,
         InventoryReservationService $inv,
-        PayHereService $payHere
+        PayHereService $payHere,
+        OnePayService $onepay // ✅ ADD THIS
     ) {
         $data = $request->validate([
             'order_number' => 'required|string|max:50',
