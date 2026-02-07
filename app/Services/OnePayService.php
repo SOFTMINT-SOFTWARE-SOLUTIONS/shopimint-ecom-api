@@ -12,8 +12,11 @@ class OnePayService
         $url = $baseUrl . '/v3/checkout/link/';
 
         $res = Http::timeout(30)
-            ->acceptJson()
-            ->asJson()
+            ->withHeaders([
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json',
+                'Authorization' => config('onepay.api_key'),
+            ])
             ->post($url, $payload);
 
         if (!$res->successful()) {
