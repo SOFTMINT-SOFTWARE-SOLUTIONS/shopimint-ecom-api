@@ -19,7 +19,7 @@ class AuthController extends Controller
             'last_name'  => ['nullable','string','max:60'],
             'email'      => ['required','email','max:120','unique:users,email'],
             'password'   => ['required','string','min:6','confirmed'],
-            'marketing_opt_in' => ['nullable','boolean'],
+            // 'marketing_opt_in' => ['nullable','boolean'],
         ]);
 
         $user = User::create([
@@ -32,9 +32,11 @@ class AuthController extends Controller
             'user_id' => $user->id,
             'first_name' => $data['first_name'],
             'last_name'  => $data['last_name'] ?? null,
+            'phone' => $data['phone'] ?? null,
+            'email'    => $data['email'],
             'marketing_opt_in' => (int)($data['marketing_opt_in'] ?? 0),
-            'default_billing_address_id' => null,
-            'default_shipping_address_id' => null,
+            // 'default_billing_address_id' => null,
+            // 'default_shipping_address_id' => null,
         ]);
 
         $token = $user->createToken('customer-token')->plainTextToken;
@@ -52,6 +54,8 @@ class AuthController extends Controller
                 'id' => $customer->id,
                 'first_name' => $customer->first_name,
                 'last_name' => $customer->last_name,
+                'phone' => $customer->phone,
+                'email' => $customer->email,
                 'marketing_opt_in' => (int)$customer->marketing_opt_in,
             ],
         ], 201);
@@ -81,8 +85,8 @@ class AuthController extends Controller
                 'first_name' => $user->name ?? 'Customer',
                 'last_name' => null,
                 'marketing_opt_in' => 0,
-                'default_billing_address_id' => null,
-                'default_shipping_address_id' => null,
+                // 'default_billing_address_id' => null,
+                // 'default_shipping_address_id' => null,
             ]);
         }
 
@@ -101,6 +105,8 @@ class AuthController extends Controller
                 'id' => $customer->id,
                 'first_name' => $customer->first_name,
                 'last_name' => $customer->last_name,
+                'phone' => $customer->phone,
+                'email' => $customer->email,
                 'marketing_opt_in' => (int)$customer->marketing_opt_in,
             ],
         ]);
@@ -123,8 +129,8 @@ class AuthController extends Controller
                 'id' => $customer->id,
                 'first_name' => $customer->first_name,
                 'last_name' => $customer->last_name,
-                'default_billing_address_id' => $customer->default_billing_address_id,
-                'default_shipping_address_id' => $customer->default_shipping_address_id,
+                'phone' => $customer->phone,
+                'email' => $customer->email,
                 'marketing_opt_in' => (int)$customer->marketing_opt_in,
             ] : null
         ]);
