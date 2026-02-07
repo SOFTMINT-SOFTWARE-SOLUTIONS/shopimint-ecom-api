@@ -50,10 +50,11 @@ use App\Http\Controllers\API\V1\Catalog\BrandController;
     use App\Http\Controllers\API\V1\OrderController;
     Route::post('/orders/{orderNumber}/cancel', [OrderController::class, 'cancel']);
 
-
     use App\Http\Controllers\API\V1\PaymentStartController;
     Route::post('/payments/start', [PaymentStartController::class, 'start']);
 
     use App\Http\Controllers\API\Webhooks\PayHereWebhookController;
     Route::post('/webhooks/payhere/notify', [PayHereWebhookController::class, 'notify']);
+
+    Route::get('/payments/onepay/status/{orderNumber}', [\App\Http\Controllers\API\V1\OnePayController::class, 'status']);
     
