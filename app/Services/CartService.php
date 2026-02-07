@@ -1,11 +1,15 @@
 <?php
+
 namespace App\Services;
+
 use App\Models\Cart;
+use Illuminate\Support\Str;
 
 class CartService
 {
     public function getOrCreateCart(?int $customerId, ?string $guestToken): Cart
     {
+        // Logged-in customer cart
         if ($customerId) {
             return Cart::firstOrCreate(
                 ['customer_id' => $customerId, 'status' => 'active'],
@@ -13,12 +17,39 @@ class CartService
             );
         }
 
-        $token = $guestToken ?: \Illuminate\Support\Str::random(40);
+        // Guest cart
+        $token = $guestToken ?: Str::random(40);
 
-        return Cart::firstOrCreate(
-            ['guest_token' => $token, 'status' => 'active'],
-            ['currency' => 'LKR']
-        );
+        // ✅ If there's already an ACTIVE cart for this token, reuse it
+        $active = Cart::where('guest_token', $token)
+            ->where('status', 'active')
+            ->first();
+
+        if ($active) {
+            return $active;
+        }
+
+        /**
+         * ✅ IMPORTANT:
+         * If the same token exists in DB but NOT active (ex: converted),
+         * we must generate a NEW token because guest_token is UNIQUE.
+         */
+        $tokenExists = Cart::where('guest_token', $token)->exists();
+        if ($tokenExists) {
+            $token = Str::random(40);
+
+            // very rare safety: ensure newly generated token doesn't exist
+            while (Cart::where('guest_token', $token)->exists()) {
+                $token = Str::random(40);
+            }
+        }
+
+        // ✅ Create a brand new ACTIVE cart with a safe token
+        return Cart::create([
+            'guest_token' => $token,
+            'status' => 'active',
+            'currency' => 'LKR',
+        ]);
     }
 
     public function summary(Cart $cart, string $fulfillmentMethod, string $paymentMethodCode): array
