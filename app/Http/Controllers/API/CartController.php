@@ -12,17 +12,22 @@ class CartController extends Controller
 {
     public function show(Request $request, CartService $cartService)
     {
-        $customerId = optional($request->user())->id ? null : null; // if you later map users->customers, update here
+        $customerId = optional($request->user())->id ?? null;
         $guestToken = $request->header('X-Guest-Token') ?? $request->get('guest_token');
 
-        // For now: customer cart not used (until customers table is connected)
         $cart = $cartService->getOrCreateCart(null, $guestToken);
-
         $cart->load(['items.variant.product']);
+
+        $summary = $cartService->summary(
+            $cart,
+            $request->get('fulfillment_method', 'delivery'),
+            $request->get('payment_method_code', 'COD')
+        );
 
         return response()->json([
             'cart' => $cart,
             'guest_token' => $cart->guest_token,
+            'summary' => $summary,
         ]);
     }
 

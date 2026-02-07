@@ -37,10 +37,11 @@ use App\Http\Controllers\API\V1\Catalog\BrandController;
 
     // Cart
     Route::get('/cart', [CartController::class, 'show']);
-    Route::post('/cart/items', [CartController::class, 'addItem']);
-    Route::put('/cart/items/{id}', [CartController::class, 'updateItem']);
-    Route::delete('/cart/items/{id}', [CartController::class, 'removeItem']);
-    Route::delete('/cart', [CartController::class, 'clear']);
+    Route::post('/cart/add', [CartController::class, 'addItem']);
+    Route::post('/cart/update', [CartController::class, 'updateItem']);
+    Route::post('/cart/clear', [CartController::class, 'clear']);
+    Route::post('/checkout', [CheckoutController::class, 'checkout']);
+    Route::post('/payments/start', [PaymentStartController::class, 'start']);
 
     // Checkout
     Route::post('/checkout', [CheckoutController::class, 'placeOrder']);

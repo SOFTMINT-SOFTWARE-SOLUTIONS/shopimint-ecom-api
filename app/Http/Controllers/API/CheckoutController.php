@@ -93,6 +93,13 @@ class CheckoutController extends Controller
 
                 $orderNumber = 'SM' . date('ymd') . strtoupper(Str::random(6));
 
+
+                $fulfillment = $data['fulfillment_method'];
+                $paymentMethodCode = $request->get('payment_method_code', 'COD'); // or send in request body
+                $summary = $cartService->summary($cart, $fulfillment, $paymentMethodCode);
+                $shipping = $summary['shipping_total'];
+                $paymentFee = $summary['payment_fee_total'];
+
                 $order = Order::create([
                     'order_number' => $orderNumber,
                     'customer_id' => $customer->id,
@@ -105,9 +112,13 @@ class CheckoutController extends Controller
 
                     'subtotal' => $subtotal,
                     'discount_total' => $discount,
+                    
                     'shipping_total' => $shipping,
-                    'tax_total' => $tax,
-                    'grand_total' => $subtotal - $discount + $shipping + $tax,
+                    //'payment_fee_total' => $paymentFee, // add column if needed
+                    
+                    'tax_total' => $tax + $paymentFee,
+                    //'grand_total' => $subtotal - $discount + $shipping + $tax,
+                    'grand_total' => $summary['grand_total'],
 
                     'fulfillment_method' => $data['fulfillment_method'],
                     'status' => 'pending',
