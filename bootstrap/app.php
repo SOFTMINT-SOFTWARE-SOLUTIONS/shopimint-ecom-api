@@ -13,13 +13,15 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
 
-        // ✅ This is required for Sanctum cookie auth (Next.js)
-        $middleware->api(prepend: [
-            \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+        // ✅ For API Bearer token auth: exclude API from CSRF
+        $middleware->validateCsrfTokens(except: [
+            'api/*',
         ]);
 
-        // (Optional) If you want CORS globally handled, usually not needed if config/cors.php is correct.
-        // $middleware->append(\Illuminate\Http\Middleware\HandleCors::class);
+        // ❌ REMOVE this (only for cookie-based SPA auth)
+        // $middleware->api(prepend: [
+        //     \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+        // ]);
 
     })
     ->withExceptions(function (Exceptions $exceptions) {
