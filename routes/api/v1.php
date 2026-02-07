@@ -34,8 +34,8 @@ use App\Http\Controllers\API\V1\Catalog\BrandController;
     Route::get('/products/top-selling', [ProductController::class, 'topSelling']);
     Route::get('/products/{slug}', [ProductController::class, 'show']);
 
-
     // Cart
+    use App\Http\Controllers\API\V1\CartController;
     Route::get('/cart', [CartController::class, 'show']);
     Route::post('/cart/add', [CartController::class, 'addItem']);
     Route::post('/cart/update', [CartController::class, 'updateItem']);
@@ -44,5 +44,16 @@ use App\Http\Controllers\API\V1\Catalog\BrandController;
     Route::post('/payments/start', [PaymentStartController::class, 'start']);
 
     // Checkout
+    use App\Http\Controllers\API\V1\CheckoutController;
     Route::post('/checkout', [CheckoutController::class, 'placeOrder']);
+
+    use App\Http\Controllers\API\V1\OrderController;
+    Route::post('/orders/{orderNumber}/cancel', [OrderController::class, 'cancel']);
+
+
+    use App\Http\Controllers\API\V1\PaymentStartController;
+    Route::post('/payments/start', [PaymentStartController::class, 'start']);
+
+    use App\Http\Controllers\API\Webhooks\PayHereWebhookController;
+    Route::post('/webhooks/payhere/notify', [PayHereWebhookController::class, 'notify']);
     
