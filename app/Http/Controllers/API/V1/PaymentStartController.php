@@ -172,7 +172,7 @@ class PaymentStartController extends Controller
                     'customer_last_name' => $last,
                     'customer_phone_number' => $order->guest_phone,
                     'customer_email' => $order->guest_email ?? '',
-                    'transaction_redirect_url' => config('onepay.redirect_url'),
+                    'transaction_redirect_url' => config('onepay.redirect_url').'?order_number='.$order->order_number,
                     'additionalData' => json_encode([
                         'order_number' => $order->order_number,
                         'intent_id' => $intent->id,

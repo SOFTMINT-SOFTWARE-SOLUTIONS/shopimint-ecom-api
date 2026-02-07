@@ -10,6 +10,25 @@ use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
 {
+    /**
+     * ✅ GET ORDER BY ORDER NUMBER (for success page + tracking)
+     * GET /api/v1/orders/{orderNumber}
+     */
+    public function show(Request $request, string $orderNumber)
+    {
+        $order = Order::with(['items'])->where('order_number', $orderNumber)->firstOrFail();
+
+        // Optional: hide internal fields if needed
+        return response()->json([
+            'status' => true,
+            'order'  => $order,
+        ]);
+    }
+
+    /**
+     * ✅ CANCEL ORDER
+     * POST /api/v1/orders/{orderNumber}/cancel
+     */
     public function cancel(Request $request, string $orderNumber, InventoryReservationService $inv)
     {
         $order = Order::where('order_number', $orderNumber)->firstOrFail();
@@ -24,10 +43,16 @@ class OrderController extends Controller
             $inv->releaseOrder($order);
 
             $order->status = 'cancelled';
-            $order->payment_status = $order->payment_status === 'paid' ? 'refunded' : $order->payment_status;
+            $order->payment_status = $order->payment_status === 'paid'
+                ? 'refunded'
+                : $order->payment_status;
+
             $order->save();
         });
 
-        return response()->json(['message' => 'Order cancelled and stock released']);
+        return response()->json([
+            'status' => true,
+            'message' => 'Order cancelled and stock released',
+        ]);
     }
 }
