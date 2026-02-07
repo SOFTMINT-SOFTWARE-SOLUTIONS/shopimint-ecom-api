@@ -45,7 +45,7 @@ use App\Http\Controllers\API\V1\Catalog\BrandController;
 
     // Checkout
     use App\Http\Controllers\API\V1\CheckoutController;
-    Route::post('/checkout', [CheckoutController::class, 'placeOrder']);
+    Route::post('/checkout', [CheckoutController::class, 'checkout']);
 
     use App\Http\Controllers\API\V1\OrderController;
     Route::post('/orders/{orderNumber}/cancel', [OrderController::class, 'cancel']);
