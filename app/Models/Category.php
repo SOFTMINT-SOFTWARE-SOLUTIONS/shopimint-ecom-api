@@ -60,8 +60,17 @@ class Category extends Model
         return $this->belongsTo(Category::class, 'parent_id');
     }
 
+    // public function children(): HasMany
+    // {
+    //     return $this->hasMany(Category::class, 'parent_id');
+    // }
+
     public function children(): HasMany
     {
-        return $this->hasMany(Category::class, 'parent_id');
+        return $this->hasMany(Category::class, 'parent_id')
+            ->where('is_active', 1)
+            ->orderBy('sort_order')
+            ->orderBy('name');
     }
+
 }
