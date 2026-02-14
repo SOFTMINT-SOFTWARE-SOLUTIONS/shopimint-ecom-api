@@ -6,6 +6,7 @@ use App\Http\Controllers\API\V1\Catalog\CategoryController;
 use App\Http\Controllers\API\V1\Catalog\CategoryProductController;
 use App\Http\Controllers\API\V1\Catalog\ProductController;
 use App\Http\Controllers\API\V1\Catalog\BrandController;
+use App\Http\Controllers\API\V1\Catalog\SearchController;
     
     // Auth
     Route::post('/auth/register', [AuthController::class, 'register']);
@@ -33,6 +34,8 @@ use App\Http\Controllers\API\V1\Catalog\BrandController;
     Route::get('/products/featured', [ProductController::class, 'featured']);
     Route::get('/products/top-selling', [ProductController::class, 'topSelling']);
     Route::get('/products/{slug}', [ProductController::class, 'show']);
+
+    Route::get('/search', [SearchController::class, 'search']);
 
     // Cart
     use App\Http\Controllers\API\V1\CartController;
