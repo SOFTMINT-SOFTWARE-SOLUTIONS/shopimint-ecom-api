@@ -139,9 +139,14 @@ class ProductResource extends Resource
             Forms\Components\Section::make('Descriptions')
                 ->schema([
                     Forms\Components\Textarea::make('short_description')->rows(3),
-                    Forms\Components\RichEditor::make('description')->columnSpanFull(),
+                    //Forms\Components\RichEditor::make('description')->columnSpanFull(),
+                    // instead of Forms\Components\RichEditor::make('description')
+                    \Awcodes\FilamentTiptapEditor\TiptapEditor::make('description')
+                        ->columnSpanFull()
+                        ->profile('default') // profile includes tables
                 ])
                 ->columns(2),
+                
 
             Forms\Components\Section::make('Images ')
                 ->schema([
