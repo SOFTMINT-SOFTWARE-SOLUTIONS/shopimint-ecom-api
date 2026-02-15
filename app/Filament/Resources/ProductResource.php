@@ -141,7 +141,7 @@ class ProductResource extends Resource
                     Forms\Components\Textarea::make('short_description')->rows(3),
                     //Forms\Components\RichEditor::make('description')->columnSpanFull(),
                     // instead of Forms\Components\RichEditor::make('description')
-                    \Awcodes\FilamentTiptapEditor\TiptapEditor::make('description')
+                    FilamentTiptapEditor\TiptapEditor::make('description')
                         ->columnSpanFull()
                         ->profile('default') // profile includes tables
                 ])
