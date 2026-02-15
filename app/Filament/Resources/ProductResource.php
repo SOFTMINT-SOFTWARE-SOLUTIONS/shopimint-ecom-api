@@ -27,7 +27,7 @@ use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\IconColumn;
 
-
+use FilamentTiptapEditor\TiptapEditor;
 
 class ProductResource extends Resource
 {
@@ -141,7 +141,7 @@ class ProductResource extends Resource
                     Forms\Components\Textarea::make('short_description')->rows(3),
                     //Forms\Components\RichEditor::make('description')->columnSpanFull(),
                     // instead of Forms\Components\RichEditor::make('description')
-                    FilamentTiptapEditor\TiptapEditor::make('description')
+                    TiptapEditor::make('description')
                         ->columnSpanFull()
                         ->profile('default') // profile includes tables
                 ])
