@@ -9,6 +9,7 @@ use App\Models\PaymentMethod;
 use App\Services\InventoryReservationService;
 use App\Services\PayHereService;
 use App\Services\OnePayService;
+use App\Services\KokoService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -274,6 +275,104 @@ class PaymentStartController extends Controller
             ]);
         }
 
+        if ($method->code === 'KOKO') {
+
+            $result = DB::transaction(function () use ($order, $method, $koko) {
+
+                // Reuse pending intent
+                $intent = PaymentIntent::where('order_id', $order->id)
+                    ->where('payment_method_id', $method->id)
+                    ->whereIn('status', ['created', 'pending'])
+                    ->latest()
+                    ->first();
+
+                if (!$intent) {
+                    $intent = PaymentIntent::create([
+                        'order_id' => $order->id,
+                        'payment_method_id' => $method->id,
+                        'gateway_id' => null,
+                        'amount' => $order->grand_total,
+                        'currency' => $order->currency ?? 'LKR',
+                        'status' => 'pending',
+                        'request_payload' => ['provider' => 'koko'],
+                    ]);
+                }
+
+                // IMPORTANT: KOKO wants a unique _orderId for each new KOKO payment request (avoid conflicts)
+                // We'll use PaymentIntent id as unique orderId.
+                $kokoOrderId = 'KOKO-' . $intent->id;
+
+                $currency = $order->currency ?? 'LKR';
+                $amount = number_format((float)$order->grand_total, 2, '.', '');
+
+                $nameParts = preg_split('/\s+/', trim($order->guest_name ?: 'Customer'), 2);
+                $first = $nameParts[0] ?? 'Customer';
+                $last  = $nameParts[1] ?? '';
+
+                // Build orderCreate payload (form-urlencoded)
+                $fields = [
+                    '_mId' => config('koko.merchant_id'),
+                    'api_key' => config('koko.api_key'),
+
+                    '_returnUrl' => rtrim(config('koko.return_url'), '/') . '?order=' . urlencode($order->order_number),
+                    '_cancelUrl' => rtrim(config('koko.cancel_url'), '/') . '?order=' . urlencode($order->order_number),
+                    '_responseUrl' => rtrim(config('koko.response_url'), '/') . '?order=' . urlencode($order->order_number),
+
+                    '_amount' => $amount,
+                    '_currency' => $currency,
+
+                    '_reference' => $order->order_number,
+                    '_orderId' => $kokoOrderId,
+
+                    '_pluginName' => config('koko.plugin_name'),
+                    '_pluginVersion' => config('koko.plugin_version'),
+
+                    '_description' => 'Order ' . $order->order_number,
+                    '_firstName' => $first,
+                    '_lastName' => $last,
+                    '_email' => $order->guest_email ?? '',
+                ];
+
+                $dataString = $koko->buildOrderCreateDataString($fields);
+                $signature = $koko->sign($dataString);
+
+                $fields['dataString'] = $dataString;
+                $fields['signature'] = $signature;
+
+                // Save intent snapshot
+                $intent->gateway_reference = $kokoOrderId; // store merchant order id used with KOKO
+                $intent->redirect_url = $koko->orderCreateUrl();
+                $intent->request_payload = array_merge((array)$intent->request_payload, [
+                    'koko' => [
+                        'order_id' => $kokoOrderId,
+                        'fields' => $fields,
+                    ],
+                ]);
+                $intent->save();
+
+                // Keep pending until webhook (_responseUrl) confirms success
+                $order->status = 'pending';
+                $order->payment_status = 'unpaid';
+                $order->save();
+
+                return [$intent, $fields];
+            });
+
+            [$intent, $fields] = $result;
+
+            return response()->json([
+                'message' => 'Redirect to KOKO',
+                'order' => $order->fresh(),
+                'payment_intent' => $intent,
+                'gateway' => [
+                    'provider' => 'koko',
+                    'action_url' => rtrim(config('koko.base_url'), '/') . '/api/merchants/orderCreate',
+                    'method' => 'POST',
+                    'fields' => $fields,
+                ],
+            ]);
+        }
+
         /*
         |--------------------------------------------------------------------------
         | 3) INSTALLMENTS & OTHER GATEWAYS (PLACEHOLDERS)
@@ -285,7 +384,6 @@ class PaymentStartController extends Controller
         */
 
         if (in_array($method->code, [
-            'KOKO',
             'PAYZEE',
             'MINTPAY',
         ], true)) {

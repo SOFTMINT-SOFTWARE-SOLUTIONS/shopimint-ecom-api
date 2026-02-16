@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\Webhooks\OnePayWebhookController;
+use App\Http\Controllers\API\Webhooks\KokoWebhookController;
 
 // ✅ Example: API v1 routes file include
 Route::prefix('v1')->group(function () {
@@ -9,3 +10,4 @@ Route::prefix('v1')->group(function () {
 });
 
 Route::post('/webhooks/onepay', [OnePayWebhookController::class, 'handle']);
+Route::post('/webhooks/koko', [KokoWebhookController::class, 'handle']);
